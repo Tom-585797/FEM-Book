@@ -1,0 +1,51 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# ---------------------- 关键：设置中文字体，解决乱码 ----------------------
+plt.rcParams['font.sans-serif'] = ['WenQuanYi Zen Hei', 'SimHei', 'DejaVu Sans']
+plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
+
+# ---------------------- 函数定义 ----------------------
+def compute_pi(n):
+    if n == 0:
+        return 0.0
+    return n * np.sin(np.pi / n)
+
+def compute_error(pi_approx, pi_exact=np.pi):
+    return np.abs(pi_exact - pi_approx)
+
+# ---------------------- 数据计算 ----------------------
+n_list = [1, 2, 4, 8, 16, 32, 64, 128, 256]
+pi_approx_list = []
+error_list = []
+h_list = []
+
+for n in n_list:
+    pi_n = compute_pi(n)
+    e_n = compute_error(pi_n)
+    h = 1.0 / n
+
+    pi_approx_list.append(pi_n)
+    error_list.append(e_n)
+    h_list.append(h)
+
+# ---------------------- 绘图 ----------------------
+plt.figure(figsize=(8, 6))
+# 绘制实际误差曲线
+plt.loglog(h_list, error_list, 'o-', color='#1f77b4', linewidth=1.5, 
+           label=r'$e_n = |\pi - \pi_n|$')
+
+# 绘制理论O(h²)曲线
+h_theory = np.logspace(-3, 0, 100)
+e_theory = (np.pi ** 3 / 6) * h_theory ** 2
+plt.loglog(h_theory, e_theory, '--', color='#ff7f0e', linewidth=1.2, 
+           label=r'理论斜率 $O(h^2)$')
+
+# 图表设置（现在中文可以正常显示了）
+plt.xlabel(r'$h = 1/n$ (单元尺寸)', fontsize=12)
+plt.ylabel(r'$e_n = |\pi - \pi_n|$ (误差)', fontsize=12)
+plt.title('多边形逼近π的误差收敛曲线', fontsize=14)
+plt.grid(True, which="both", ls="--", alpha=0.5)
+plt.legend(fontsize=12)
+
+plt.show()
